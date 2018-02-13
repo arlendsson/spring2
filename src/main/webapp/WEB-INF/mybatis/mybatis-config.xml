@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<settings>
+		<setting name="cacheEnabled" value="true" /> <!-- default:true -->
+		<setting name="useGeneratedKeys" value="false" /> <!-- default:false -->
+		<setting name="jdbcTypeForNull" value="NULL" /> 
+	</settings>
+	
+	
+	<typeAliases>
+		<!-- <typeAlias type="com.my.framework.mypage.MyPageVo" alias="MyPageVo"></typeAlias> -->
+		<package name="com.my.framework" />
+	</typeAliases>
+	
+	
+	<!-- Mapper 등록 못읽음.  -->
+	<!--
+ 	<mappers>
+		<mapper resource="/WEB-INF/mybatis/mapper/**/*Mapper.xml" />
+	</mappers>
+	 -->
+</configuration>

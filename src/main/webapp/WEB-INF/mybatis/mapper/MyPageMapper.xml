@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="MyPageMapper">
+	<select id="selectDual" parameterType="String" resultType="String">
+		<![CDATA[
+		/* mapper.MyPageMapper.selectDual */
+		SELECT DATE_FORMAT(now(),'%Y%m%d%H%i%s') FROM DUAL
+		]]>
+	</select>
+
+	<select id="selectUser" parameterType="MyPageVo" resultType="MyPageVo">
+		/* mapper.MyPageMapper.selectUser */
+		SELECT
+			SEQ
+			, ID
+			, PW
+			, NAME
+		FROM USERS
+		WHERE ID = #{id}
+		<!-- 
+		<if test='pw != null and pw != ""'>
+		AND PW = #{pw}
+		</if>
+		 -->
+	</select>
+
+
+	<!-- BOARD -->
+	<resultMap type="BoardVo" id="selectBoardListResultMap">
+		<result property="seq"     column="SEQ"     />
+		<result property="title"   column="TITLE"   />
+		<result property="content" column="CONTENT" javaType="String" jdbcType="VARCHAR" />
+		<result property="regId"   column="REG_ID"  />
+		<result property="modId"   column="MOD_ID"  />
+		<result property="regDate" column="REG_DATE"/>
+		<result property="modDate" column="MOD_DATE"/>
+		<result property="count"   column="COUNT"   />
+		<result property="rnum"    column="RNUM"    />
+	</resultMap>
+
+	<select id="selectBoardCount" parameterType="BoardVo" resultType="int">
+		/* mapper.selectBoardCount */
+		SELECT	COUNT(*) AS totalCount	FROM BOARD
+	</select>
+
+	<select id="selectBoardList" parameterType="BoardVo" resultMap="selectBoardListResultMap">
+		/* mapper.selectBoardList */
+		SELECT * FROM (
+			SELECT
+				SEQ
+				, TITLE
+				, CONTENT
+				, COUNT
+				, REG_ID
+				, MOD_ID
+				, REG_DATE
+				, MOD_DATE
+				, ROW_NUMBER() OVER(ORDER BY SEQ DESC) AS RNUM
+			FROM BOARD
+			ORDER BY SEQ DESC
+			LIMIT #{pageBegin}, 10	<!-- #{pageEnd} -->
+		) QUERY_LIST
+	</select>
+
+	<insert id="insertBoard" parameterType="BoardVo">
+		<!-- <selectKey keyProperty="seq" resultType="int" order="BEFORE">
+		</selectKey> -->
+
+		/* mapper.insertBoard */
+		INSERT INTO BOARD (
+		      TITLE
+		    , CONTENT
+		    , REG_ID
+		    , REG_DATE
+		) VALUES (
+		      #{title, javaType=String, jdbcType=VARCHAR}
+		    , #{content, javaType=String, jdbcType=VARCHAR}
+		    , #{regId, javaType=String, jdbcType=VARCHAR}
+		    , now()
+		)
+	</insert>
+
+	<update id="updateBoard" parameterType="BoardVo">
+		/* mapper.updateBoard */
+		UPDATE BOARD SET
+		      TITLE    = #{title, javaType=String, jdbcType=VARCHAR}
+		    , CONTENT  = #{content, javaType=String, jdbcType=VARCHAR}
+		    , MOD_ID   = #{modId, javaType=String, jdbcType=VARCHAR}
+		    , MOD_DATE = now()
+		WHERE SEQ = #{seq, javaType=Integer, jdbcType=NUMERIC}
+		AND REG_ID = #{regId, javaType=String, jdbcType=VARCHAR}
+	</update>
+
+</mapper>
+
+
+
