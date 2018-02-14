@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	 xmlns="http://www.springframework.org/schema/beans"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xmlns:beans="http://www.springframework.org/schema/beans"
+	 xmlns:context="http://www.springframework.org/schema/context"
+	 xmlns:mvc="http://www.springframework.org/schema/mvc"
+	 xmlns:util="http://www.springframework.org/schema/util"
+	 xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+			http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+			http://www.springframework.org/schema/util http://www.springframework.org/schema/context/spring-util.xsd
+			">
+
+
+	<context:component-scan base-package="com.my.framework">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service" />
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository" />
+	</context:component-scan>
+	
+	<!-- 
+	<util:properties id="serviceConfig" location="classpath:properties/${SERVER_MODE:local}/serviceConfig.properties" />
+	<util:properties id="app" location="classpath:/properties/${SERVER_MODE:local}/app.properties" />
+	 -->
+	
+	<mvc:resources mapping="/static-#{app['app.version']}/**" location="/resources/" />
+	<mvc:resources mapping="favicon.ico" location="/favicon.ico" />
+	<mvc:resources mapping="/resources/**" location="/resources/" />
+	<mvc:resources mapping="/index.html" location="/index.html" />
+	
+	
+	<bean id="exceptionResolver" class="com.my.framework.exception.CustomSimpleMappingExceptionResolver" />
+	
+	
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUpoadSize" value="10000000" />
+	</bean>
+	
+	
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+	
+	<bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+
+
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" />
+	
+	
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**/*.do" />
+			<mvc:mapping path="/**/*.json" />
+			<mvc:exclude-mapping path="/index.do" />
+			<mvc:exclude-mapping path="/index/*.do" />
+			<bean class="com.my.framework.interceptor.LoginInterceptor" />
+		</mvc:interceptor>
+	</mvc:interceptors>
+	
+	
+	
+	
+	<!-- https://okky.kr/article/294142 -->
+	<bean id="exceptionMapping" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<property name="exceptionMappings">
+			<props>
+				<prop key="com.my.framework.exception.SessionException">error/errorSession</prop>
+			</props>
+		</property>
+		<property name="defaultErrorView" value="error/error" />
+	</bean>
+
+
+</beans>
+
